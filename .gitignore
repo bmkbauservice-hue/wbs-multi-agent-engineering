@@ -1,0 +1,26 @@
+# Dependencies and generated files
+node_modules/
+dist/
+coverage/
+*.log
+*.tsbuildinfo
+# Secrets and private runtime state
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.sqlite*
+*.db
+.data/
+data/
+.wbs-memory/
+# Private exports, backups and editor files
+*backup*/
+*Backup*/
+Archiv/
+private/
+*.dump
+.vscode/
+.DS_Store

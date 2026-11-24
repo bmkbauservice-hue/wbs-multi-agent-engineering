@@ -1,0 +1,1 @@
+{"name":"wbs-lektion-05","version":"1.0.0","private":true,"type":"module","engines":{"node":">=22"},"scripts":{"test:api":"tsx src/openai-sdk.ts","test:agent":"tsx src/agents-sdk.ts","check":"tsc --noEmit"},"dependencies":{"openai":"latest","@openai/agents":"latest","zod":"^4.0.0"},"devDependencies":{"tsx":"latest","typescript":"latest","@types/node":"^22.0.0"}}

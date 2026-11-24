@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {agentLoop} from './loop.ts';
+import {createLab, goal, ranking} from './logistics.ts';
+import {call, simulatedModel} from './demo.ts';
+test('five turns, four tools, simulation only',async()=>{const l=createLab();const r=await agentLoop(goal,simulatedModel(),l.tools,l.goalMet);assert.equal(r.status,'completed');assert.equal(r.turns,5);assert.equal(r.actions,4);assert.equal(l.getPreview()?.status,'simulated');assert.deepEqual(ranking().map(s=>s.delayHours),[24,12,8]);});
+test('false completion rejected',async()=>{const l=createLab();const r=await agentLoop(goal,async()=>({calls:[],text:'fertig'}),l.tools,l.goalMet);assert.equal(r.status,'incomplete');});
+test('turn limit prevents infinite loop',async()=>{const l=createLab();const r=await agentLoop(goal,async()=>call('get_shipment_data',{date_range:'last_7_days'}),l.tools,l.goalMet,{turns:2,actions:8,contextChars:24000});assert.equal(r.status,'turn_limit');assert.equal(r.actions,2);});
+test('action limit prevents tool execution',async()=>{const l=createLab();const r=await agentLoop(goal,simulatedModel(),l.tools,l.goalMet,{turns:8,actions:0,contextChars:24000});assert.equal(r.status,'action_limit');assert.equal(r.actions,0);});
+test('context budget blocks model',async()=>{const l=createLab();const r=await agentLoop(goal,simulatedModel(),l.tools,l.goalMet,{turns:8,actions:8,contextChars:1});assert.equal(r.status,'context_limit');assert.equal(r.turns,0);});
+test('invalid tool calls fail twice then stop',async()=>{const l=createLab();const r=await agentLoop(goal,async()=>call('calculate_delays',{date_range:'wrong'}),l.tools,l.goalMet);assert.equal(r.status,'tool_error');assert.equal(r.actions,2);assert.equal(l.getPreview(),undefined);});
+test('model error stops',async()=>{const l=createLab();const r=await agentLoop(goal,async()=>{throw new Error('offline');},l.tools,l.goalMet);assert.equal(r.status,'model_error');});
+test('recipient lock and duplicate preview',()=>{const l=createLab();l.tools.get_shipment_data.execute({date_range:'last_7_days'});l.tools.calculate_delays.execute({date_range:'last_7_days'});l.tools.lookup_manager.execute({role:'logistics manager'});const args={recipient_name:'Alex Beispiel',recipient_email:'other@example.com',subject:'Test',body:'S-102 S-105 S-103'};assert.throws(()=>l.tools.send_email.execute(args));l.tools.send_email.execute({...args,recipient_email:'logistik@example.com'});assert.throws(()=>l.tools.send_email.execute({...args,recipient_email:'logistik@example.com'}));});

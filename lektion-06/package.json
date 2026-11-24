@@ -1,0 +1,32 @@
+{
+  "name": "wbs-lektion-06",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "first": "tsx src/samples/first-agent.ts",
+    "pokedex": "tsx src/samples/pokedex.ts",
+    "review": "tsx src/samples/review.ts",
+    "guardrail": "tsx src/samples/guardrail.ts",
+    "max-turns": "tsx src/samples/max-turns.ts",
+    "dev": "tsx src/server.ts",
+    "test:local": "tsx --test src/local.test.ts"
+  },
+  "dependencies": {
+    "@openai/agents": "latest",
+    "openai": "latest",
+    "zod": "^4.0.0",
+    "express": "^5.1.0",
+    "dotenv": "^16.6.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "typescript": "latest",
+    "tsx": "latest"
+  }
+}
